@@ -10,6 +10,17 @@ from __future__ import unicode_literals
 from django.db import connection, models
 
 
+class ModelVerboseNameTooLong(models.Model):
+    """ This test should break MySQL / Postgres backends
+    """
+    name = models.CharField(max_length=1)
+    class Meta:
+        verbose_name = "Ridiculously long verbose name that is out of control more than 100 chars (actually > 255) " + \
+            "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 " + \
+            "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 " + \
+            "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 "
+
+
 class FieldErrors(models.Model):
     charfield = models.CharField()
     charfield2 = models.CharField(max_length=-1)
@@ -364,7 +375,8 @@ class BadIndexTogether1(models.Model):
         ]
 
 
-model_errors = """invalid_models.fielderrors: "charfield": CharFields require a "max_length" attribute that is a positive integer.
+model_errors = """invalid_models.modelverbosenametoolong: "verbose_name": verbose_name cannot be longer than 100 characters with MySQL or PostgreSQL backends."
+invalid_models.fielderrors: "charfield": CharFields require a "max_length" attribute that is a positive integer.
 invalid_models.fielderrors: "charfield2": CharFields require a "max_length" attribute that is a positive integer.
 invalid_models.fielderrors: "charfield3": CharFields require a "max_length" attribute that is a positive integer.
 invalid_models.fielderrors: "decimalfield": DecimalFields require a "decimal_places" attribute that is a non-negative integer.
